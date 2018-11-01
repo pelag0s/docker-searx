@@ -30,6 +30,10 @@ RUN apk -U upgrade \
  && apk del build-dependencies \
  && rm -f /var/cache/apk/*
 
+COPY 1419.diff /tmp/
+RUN cd /usr/local/searx \
+ && patch -p1 </tmp/1419.diff
+
 COPY run.sh /usr/local/bin/run.sh
 
 RUN chmod +x /usr/local/bin/run.sh

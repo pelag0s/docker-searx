@@ -1,0 +1,37 @@
+diff --git a/searx/search.py b/searx/search.py
+index 950a49f23..e4f071bfc 100644
+--- a/searx/search.py
++++ b/searx/search.py
+@@ -15,6 +15,7 @@
+ (C) 2013- by Adam Tauber, <asciimoo@gmail.com>
+ '''
+ 
++import copy
+ import gc
+ import sys
+ import threading
+@@ -405,6 +406,14 @@ def search(self):
+             # append request to list
+             requests.append((selected_engine['name'], search_query.query, request_params))
+ 
++            # append another request with default search language to list
++            # ToDo make default_search_lang user configurable
++            if request_params['language'] != settings['search']['default_search_lang']:
++                request_params_default_lang = copy.deepcopy(request_params)
++                request_params_default_lang['language'] = settings['search']['default_search_lang']
++                requests.append((selected_engine['name'], search_query.query, request_params_default_lang))
++            logger.debug(requests)
++
+             # update timeout_limit
+             timeout_limit = max(timeout_limit, engine.timeout)
+ 
+--- a/searx/settings.yml
++++ b/searx/settings.yml
+@@ -6,6 +6,7 @@
+     safe_search : 0 # Filter results. 0: None, 1: Moderate, 2: Strict
+     autocomplete : "" # Existing autocomplete backends: "dbpedia", "duckduckgo", "google", "startpage", "wikipedia" - leave blank to turn it off by default
+     language : "en-US"
++    default_search_lang: "en-US"  # search language additional to user selectable (only applicable when different to primary search language)
+
+ server:
+     port : 8888
